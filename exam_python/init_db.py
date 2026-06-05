@@ -16,9 +16,13 @@ with app.app_context():
         if not Role.query.filter_by(name=name).first():
             db.session.add(Role(name=name, description=desc))
 
-    # Создание тестового админа (логин: admin, пароль: admin)
+    # Получаем роли
+    admin_role = Role.query.filter_by(name='администратор').first()
+    moderator_role = Role.query.filter_by(name='модератор').first()
+    user_role = Role.query.filter_by(name='пользователь').first()
+
+    # Создание тестового админа
     if not User.query.filter_by(login='admin').first():
-        admin_role = Role.query.filter_by(name='администратор').first()
         user = User(
             login='admin',
             password_hash=generate_password_hash('admin'),
@@ -26,6 +30,29 @@ with app.app_context():
             first_name='Дарья',
             middle_name='Андреевна',
             role_id=admin_role.id
+        )
+        db.session.add(user)
+
+    # Создание тестового модератора
+    if not User.query.filter_by(login='moderator').first():
+        user = User(
+            login='moderator',
+            password_hash=generate_password_hash('moderator'),
+            last_name='Петров',
+            first_name='Петр',
+            middle_name='Петрович',
+            role_id=moderator_role.id
+        )
+        db.session.add(user)
+
+    # Создание тестового пользователя
+    if not User.query.filter_by(login='user').first():
+        user = User(
+            login='user',
+            password_hash=generate_password_hash('user'),
+            last_name='Васильев',
+            first_name='Василий',
+            role_id=user_role.id
         )
         db.session.add(user)
 
@@ -37,3 +64,7 @@ with app.app_context():
 
     db.session.commit()
     print("База данных инициализирована!")
+    print("Доступные пользователи:")
+    print("  Администратор: логин 'admin', пароль 'admin'")
+    print("  Модератор:     логин 'moderator', пароль 'moderator'")
+    print("  Пользователь:  логин 'user', пароль 'user'")
